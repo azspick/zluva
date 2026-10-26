@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#FF0000" />
+<title>当代戏精生存指南 · 超市促销级精神解药</title>
+<style>
+  /* ============ 全局变量 & 基础 ============ */
+  :root {
+    --red: #FF0000;
+    --deep-red: #c40000;
+    --yellow: #FFD700;
+    --blue: #0066FF;
+    --ink: #141414;
+    --cream: #fffbe8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "Noto Sans SC", sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 20px;
+    background-color: var(--yellow);
+    /* 黄底 + 白色高光 + 斜向红条纹，模拟超市海报底纹 */
+    background-image:
+      radial-gradient(circle at 15% 6%, rgba(255, 255, 255, .9), transparent 32%),
+      radial-gradient(circle at 88% 22%, rgba(255, 255, 255, .55), transparent 26%),
+      repeating-linear-gradient(-45deg, rgba(255, 0, 0, .075) 0 16px, transparent 16px 32px);
+  }
+
+  button { font-family: inherit; }
+
+  /* ============ 头部：悬挂促销吊牌 ============ */
+  .hero {
+    position: relative;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 88px 18px 42px;
+    text-align: center;
+    overflow: hidden; /* 裁掉放射光，避免撑出横向滚动 */
+  }
+
+  /* 两根吊绳 */
+  .ropes {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 90px;
+    pointer-events: none;
+  }
+  .ropes span {
+    position: absolute;
+    top: 0;
+    width: 8px;
+    height: 92px;
+    border-radius: 4px;
+    background: repeating-linear-gradient(180deg, #262626 0 8px, #6a6a6a 8px 16px);
+    box-shadow: 3px 0 0 rgba(0, 0, 0, .25);
+  }
+  .ropes span:nth-child(1) { left: 16%; }
+  .ropes span:nth-child(2) { right: 16%; }
+
+  /* 吊牌主体（可旋转、带锯齿下摆） */
+  .hang-sign {
+    position: relative;
+    display: inline-block;
+    width: min(980px, 100%);
+    padding: 20px clamp(14px, 3vw, 46px) 46px;
+    background: linear-gradient(180deg, #ff2b2b 0%, #e60000 55%, #b30000 100%);
+    border: 7px solid var(--ink);
+    border-radius: 10px;
+    transform: rotate(-1.6deg);
+    box-shadow: 0 16px 0 rgba(0, 0, 0, .22), 0 26px 44px rgba(120, 0, 0, .35);
+  }
+
+  /* 锯齿边缘：用 conic-gradient 画向下的三角齿 */
+  .teeth {
+    position: absolute;
+    left: -7px;
+    right: -7px;
+    bottom: -22px;
+    height: 15px;
+    background: conic-gradient(from 135deg at 50% 0, #b30000 90deg, transparent 0) 0 0 / 30px 15px repeat-x;
+  }
+
+  .badge-top {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 4px 18px;
+    background: #fff;
+    color: var(--red);
+    font-weight: 900;
+    font-size: clamp(12px, 1.6vw, 17px);
+    letter-spacing: 2px;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    transform: rotate(1.5deg);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .hang-sign h1 {
+    margin: 6px 0 16px;
+    font-size: clamp(34px, 6.4vw, 74px);
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--yellow);
+    -webkit-text-stroke: 2px var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 6px 6px 0 var(--ink), 13px 15px 0 rgba(0, 0, 0, .2);
+  }
+  .hang-sign h1 em {
+    display: inline-block;
+    font-style: normal;
+    color: #fff;
+    transform: rotate(-2.5deg) scale(1.04);
+    text-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .sub {
+    display: inline-block;
+    margin: 0;
+    padding: 8px 20px;
+    background: var(--yellow);
+    color: var(--ink);
+    font-weight: 900;
+    font-size: clamp(13px, 1.9vw, 21px);
+    line-height: 1.5;
+    border: 4px solid var(--ink);
+    border-radius: 6px;
+    transform: rotate(-.8deg);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  /* ============ 跑马灯横幅 ============ */
+  .marquee {
+    position: relative;
+    overflow: hidden;
+    margin: 2px -10px 0;
+    padding: 9px 0;
+    background: var(--blue);
+    border-top: 5px solid var(--ink);
+    border-bottom: 5px solid var(--ink);
+    transform: rotate(-.5deg);
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marqueeMove 32s linear infinite;
+  }
+  .marquee-group {
+    display: flex;
+    gap: 42px;
+    padding-right: 42px;
+    white-space: nowrap;
+  }
+  .marquee-group span {
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(12px, 1.6vw, 17px);
+    letter-spacing: 1.5px;
+  }
+  .marquee-group span::after {
+    content: " ★ ";
+    color: var(--yellow);
+  }
+  @keyframes marqueeMove {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ============ 主内容容器 ============ */
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 38px 18px 0;
+  }
+
+  /* ============ 场景选择面板 ============ */
+  .action-panel {
+    position: relative;
+    padding: 26px clamp(14px, 3vw, 34px) 30px;
+    background: rgba(255, 255, 255, .94);
+    border: 5px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: 10px 10px 0 var(--ink);
+    transform: rotate(.4deg);
+  }
+
+  /* 面板左上角的促销红丝带 */
+  .panel-ribbon {
+    position: absolute;
+    top: -20px;
+    left: -12px;
+    padding: 7px 20px;
+    background: var(--red);
+    color: var(--yellow);
+    font-weight: 900;
+    font-size: clamp(13px, 1.8vw, 18px);
+    letter-spacing: 2px;
+    border: 4px solid var(--ink);
+    border-radius: 4px;
+    transform: rotate(-3deg);
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, .85);
+  }
+
+  .panel-title {
+    margin: 8px 0 22px;
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  .panel-title span {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 3px 12px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-size: .62em;
+    transform: rotate(-2deg) translateY(-2px);
+  }
+
+  /* 货架：宽屏三列，最后两张各占一半宽度，摆出“堆头”感 */
+  .scenes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 22px 18px;
+  }
+  .scene { grid-column: span 2; }
+  .scene:nth-last-child(-n+2) { grid-column: span 3; }
+
+  /* 场景卡片：超市货架商品标牌 */
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 18px 16px;
+    text-align: left;
+    cursor: pointer;
+    background: #fff;
+    border: 5px solid var(--ink);
+    border-radius: 10px;
+    box-shadow: 8px 8px 0 var(--ink);
+    transform: rotate(var(--r, -1deg));
+    transition: transform .18s cubic-bezier(.2, 1.5, .4, 1), box-shadow .18s, background .18s;
+    --r: -1.2deg;
+  }
+  .scene:nth-child(even) { --r: 1.2deg; }
+  .scene:nth-child(3n) { --r: -.4deg; }
+
+  .scene:hover {
+    transform: rotate(var(--r)) translateY(-5px) scale(1.02);
+    box-shadow: 10px 13px 0 var(--ink);
+  }
+  .scene:focus-visible {
+    outline: 4px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  /* 选中态：变黄、描红、加厚阴影 */
+  .scene[aria-pressed="true"] {
+    --r: 0deg;
+    background: var(--yellow);
+    border-color: var(--red);
+    box-shadow: 8px 8px 0 var(--red);
+    transform: rotate(var(--r)) scale(1.03);
+  }
+
+  /* 货架角标：热销 / 限量 */
+  .scene-ribbon {
+    position: absolute;
+    top: -13px;
+    left: -8px;
+    padding: 2px 10px;
+    background: var(--blue);
+    color: #fff;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 900;
+    letter-spacing: 1px;
+    border: 3px solid var(--ink);
+    border-radius: 4px;
+    transform: rotate(-5deg);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .scene:nth-child(2n) .scene-ribbon { background: var(--red); }
+  .scene:nth-child(3n) .scene-ribbon { background: #8a2bff; }
+
+  .scene-emoji {
+    display: block;
+    font-size: clamp(32px, 3.4vw, 44px);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .scene-name {
+    display: block;
+    width: 100%;
+    font-size: clamp(16px, 1.9vw, 21px);
+    font-weight: 900;
+    line-height: 1.25;
+  }
+  .scene-tip {
+    display: inline-block;
+    margin-top: 9px;
+    padding: 2px 9px;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 700;
+    color: #444;
+    background: #f1f1f1;
+    border-radius: 999px;
+  }
+  .scene[aria-pressed="true"] .scene-tip {
+    background: #fff;
+    color: var(--deep-red);
+  }
+
+  /* 商品价格区：原价划掉 + 现价放大 */
+  .scene-price {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 11px;
+  }
+  .price-old {
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 700;
+    color: #8b8b8b;
+  }
+  .price-old s { color: #9c9c9c; }
+  .price-now {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: clamp(11px, 1.35vw, 14px);
+    font-weight: 900;
+    color: var(--deep-red);
+  }
+  .price-now b {
+    font-size: clamp(19px, 2.2vw, 26px);
+    color: var(--red);
+    -webkit-text-stroke: .5px var(--ink);
+    letter-spacing: .5px;
+  }
+  .scene[aria-pressed="true"] .price-now b {
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--ink);
+    -webkit-text-stroke: 1px var(--ink);
+  }
+  .scene[aria-pressed="true"] .price-now { color: #7a0000; }
+  .scene[aria-pressed="true"] .price-old { color: #8a6a00; }
+
+  /* “已选购”小徽标，选中才出现 */
+  .scene-tick {
+    position: absolute;
+    top: -14px;
+    right: -10px;
+    display: none;
+    padding: 3px 12px;
+    background: var(--red);
+    color: #fff;
+    font-size: clamp(11px, 1.3vw, 14px);
+    font-weight: 900;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    transform: rotate(6deg);
+    box-shadow: 3px 3px 0 var(--ink);
+    z-index: 2;
+  }
+  .scene[aria-pressed="true"] .scene-tick { display: block; }
+
+  .hint {
+    margin: 22px 0 0;
+    text-align: center;
+    font-size: clamp(13px, 1.6vw, 16px);
+    font-weight: 700;
+    color: #555;
+  }
+
+  /* ============ 指路箭头 ============ */
+  .arrow-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin: 30px 0 6px;
+  }
+  .arrow-label {
+    display: inline-block;
+    padding: 4px 20px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(13px, 1.7vw, 18px);
+    letter-spacing: 2px;
+    border: 4px solid var(--ink);
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: rotate(-1.5deg);
+  }
+  .arrows {
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.1;
+    color: var(--red);
+    -webkit-text-stroke: 1.5px var(--ink);
+    animation: arrowBounce .8s ease-in-out infinite alternate;
+  }
+  @keyframes arrowBounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(9px); }
+  }
+
+  /* ============ 戏精指数进度条 ============ */
+  .meter-wrap {
+    position: relative;
+    max-width: 660px;
+    margin: 26px auto 2px;
+    padding: 13px 18px 16px;
+    background: #fff;
+    border: 5px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: 7px 7px 0 var(--ink);
+    transform: rotate(-.6deg);
+  }
+  .meter-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .meter-title {
+    font-weight: 900;
+    font-size: clamp(13px, 1.7vw, 17px);
+    letter-spacing: 1px;
+  }
+  .meter-value {
+    font-weight: 900;
+    font-size: clamp(19px, 2.4vw, 26px);
+    color: var(--red);
+    -webkit-text-stroke: .8px var(--ink);
+    paint-order: stroke fill;
+    transition: color .2s;
+  }
+  .meter-wrap.full .meter-value { color: #ff2b2b; }
+  .meter-track {
+    position: relative;
+    height: 30px;
+    background: #ececec;
+    border: 4px solid var(--ink);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    width: 66%;
+    background: repeating-linear-gradient(45deg, #ff2b2b 0 10px, #ff5a5a 10px 20px);
+    border-right: 4px solid var(--ink);
+    transition: width .4s cubic-bezier(.2, 1.3, .4, 1);
+  }
+  .meter-ticks {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), rgba(0, 0, 0, .18) calc(10% - 2px) 10%);
+    pointer-events: none;
+  }
+  .meter-note {
+    margin: 8px 0 0;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 700;
+    color: #8a7b3e;
+    letter-spacing: 1px;
+    text-align: right;
+  }
+
+  /* 面板上的促销小贴纸，增加大卖场堆头感 */
+  .deco-sticker {
+    position: absolute;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-weight: 900;
+    line-height: 1.1;
+    border: 4px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    pointer-events: none;
+  }
+  .deco-sale {
+    top: -26px;
+    right: 20px;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transform: rotate(11deg);
+  }
+  .deco-sale b { display: block; font-size: 26px; color: var(--yellow); }
+  .deco-egg {
+    bottom: -22px;
+    right: 8%;
+    padding: 7px 14px;
+    background: var(--yellow);
+    color: var(--deep-red);
+    font-size: clamp(11px, 1.3vw, 14px);
+    border-radius: 6px;
+    transform: rotate(-4deg);
+  }
+
+  /* ============ 巨型抢购按钮 ============ */
+  .buy-area {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 10px;
+  }
+
+  .mega-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 22px);
+    padding: 18px clamp(20px, 4vw, 52px) 18px clamp(16px, 2.5vw, 30px);
+    background: linear-gradient(180deg, #fff05c 0%, var(--yellow) 45%, #ffb700 100%);
+    border: 7px dashed var(--red);
+    border-radius: 20px;
+    cursor: pointer;
+    transform: rotate(-1.8deg);
+    box-shadow: 0 12px 0 var(--ink), 0 22px 46px rgba(0, 0, 0, .22);
+    transition: transform .18s cubic-bezier(.2, 1.7, .4, 1), box-shadow .18s, filter .18s;
+    animation: btnGlow 2.4s ease-in-out infinite alternate;
+  }
+  .mega-btn:hover {
+    transform: rotate(1.5deg) scale(1.07);
+    box-shadow: 0 17px 0 var(--ink), 0 28px 54px rgba(0, 0, 0, .28);
+    filter: saturate(1.15);
+  }
+  .mega-btn:active {
+    transform: rotate(1.5deg) scale(.97) translateY(9px);
+    box-shadow: 0 3px 0 var(--ink), 0 8px 18px rgba(0, 0, 0, .2);
+    animation: none;
+  }
+  .mega-btn:focus-visible {
+    outline: 5px solid var(--blue);
+    outline-offset: 5px;
+  }
+  @keyframes btnGlow {
+    from { filter: drop-shadow(0 0 0 rgba(255, 0, 0, 0)); }
+    to   { filter: drop-shadow(0 0 18px rgba(255, 0, 0, .55)); }
+  }
+
+  /* 价格标签（红圆贴） */
+  .price-tag {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: clamp(66px, 8vw, 90px);
+    height: clamp(66px, 8vw, 90px);
+    background: radial-gradient(circle at 35% 30%, #ff5a5a, var(--red) 70%);
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(11px, 1.4vw, 14px);
+    line-height: 1.15;
+    text-align: center;
+    border-radius: 50%;
+    border: 4px solid var(--ink);
+    transform: rotate(-8deg);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .price-tag b { font-size: clamp(17px, 2.1vw, 23px); }
+
+  .btn-text {
+    color: var(--deep-red);
+    font-weight: 900;
+    font-size: clamp(21px, 3.3vw, 36px);
+    line-height: 1.2;
+    letter-spacing: 1px;
+    -webkit-text-stroke: 1.5px var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 3px 3px 0 #fff;
+  }
+  .btn-text small {
+    display: block;
+    margin-top: 2px;
+    font-size: .5em;
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+    color: var(--ink);
+    letter-spacing: 2px;
+  }
+
+  /* ============ 结果区：爆炸贴 + 小票 ============ */
+  .result {
+    position: relative;
+    max-width: 900px;
+    margin: 64px auto 30px;
+    padding: 26px 8px;
+  }
+  .result[hidden] { display: none; }
+
+  /* 背后的爆炸贴：clip-path 由 JS 动态生成 */
+  .burst {
+    position: absolute;
+    inset: -18px -26px;
+    background: radial-gradient(circle at 50% 38%, #ff4747, #d40000 72%);
+    filter:
+      drop-shadow(4px 0 0 var(--ink))
+      drop-shadow(-4px 0 0 var(--ink))
+      drop-shadow(0 4px 0 var(--ink))
+      drop-shadow(0 -4px 0 var(--ink));
+    z-index: 0;
+  }
+
+  /* 小票本体 */
+  .receipt {
+    position: relative;
+    z-index: 2;
+    width: min(680px, 92%);
+    margin: 0 auto;
+    padding: 24px clamp(16px, 3.4vw, 34px) 28px;
+    background-color: var(--cream);
+    background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, .028) 0 1px, transparent 1px 7px);
+    border: 5px solid var(--ink);
+    border-radius: 8px;
+    box-shadow: 13px 15px 0 var(--ink);
+    transform: rotate(-1.5deg);
+  }
+
+  .receipt-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 3px dashed #b9b09a;
+  }
+  .receipt-no {
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #6b6455;
+  }
+  .receipt-hot {
+    padding: 2px 12px;
+    background: var(--red);
+    color: #fff;
+    font-size: clamp(11px, 1.2vw, 13px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    border-radius: 3px;
+    transform: rotate(3deg);
+  }
+
+  .res-kicker {
+    margin: 14px 0 2px;
+    font-size: clamp(11px, 1.3vw, 14px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--blue);
+  }
+
+  .res-product {
+    margin: 2px 0 8px;
+    font-size: clamp(27px, 4.3vw, 44px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--red);
+    -webkit-text-stroke: 1.5px var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 4px 4px 0 rgba(255, 215, 0, .9);
+  }
+
+  .res-scene {
+    margin: 0 0 10px;
+    font-size: clamp(12px, 1.5vw, 15px);
+    font-weight: 700;
+    color: #5d5647;
+  }
+
+  /* 结果小票上的原价 / 现价条 */
+  .res-price-strip {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin: 0 0 16px;
+    padding: 7px 12px;
+    background: #fff;
+    border: 3px dashed var(--red);
+    border-radius: 6px;
+    transform: rotate(-.6deg);
+    font-size: clamp(11px, 1.4vw, 14px);
+    font-weight: 800;
+    color: #777;
+  }
+  .res-price-strip .old s { color: #9a9a9a; }
+  .res-price-strip .arrow {
+    color: var(--red);
+    font-size: 1.35em;
+    line-height: 1;
+  }
+  .res-price-strip .new {
+    color: var(--deep-red);
+    font-weight: 900;
+  }
+  .res-price-strip .new b {
+    font-size: clamp(17px, 2vw, 23px);
+    color: var(--red);
+    -webkit-text-stroke: .5px var(--ink);
+  }
+
+  /* 结果区段落小标题 */
+  .res-section-label {
+    margin: 0 0 7px;
+    font-size: clamp(11px, 1.4vw, 14px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--blue);
+  }
+
+  /* 戏精台词气泡 */
+  .speech {
+    position: relative;
+    margin: 0 0 18px;
+    padding: 18px 20px 18px 46px;
+    background: #fff;
+    border: 4px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: 7px 7px 0 var(--yellow), 7px 7px 0 4px var(--ink);
+  }
+  .speech p {
+    margin: 0;
+    font-size: clamp(16px, 2.1vw, 21px);
+    font-weight: 800;
+    line-height: 1.85;
+  }
+  .quote-mark {
+    position: absolute;
+    top: 2px;
+    left: 12px;
+    font-size: 52px;
+    line-height: 1;
+    font-weight: 900;
+    color: var(--red);
+    opacity: .55;
+  }
+
+  /* 台词切换时的小弹动 */
+  .line-pop { animation: linePop .45s cubic-bezier(.2, 1.6, .4, 1); }
+  @keyframes linePop {
+    0%   { transform: scale(.92); opacity: .2; }
+    60%  { transform: scale(1.03); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 产品参数 */
+  .meta {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 3px dashed #b9b09a;
+  }
+  .meta li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 0;
+    font-size: clamp(13px, 1.5vw, 15px);
+    line-height: 1.55;
+    border-bottom: 2px dashed #ded6c2;
+  }
+  .meta li:last-child { border-bottom: none; }
+  .meta li span {
+    flex: 0 0 auto;
+    min-width: 76px;
+    padding: 1px 8px;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    font-weight: 900;
+    font-size: .9em;
+    text-align: center;
+  }
+  .meta li b { font-weight: 800; }
+  .meta li b.stars { color: var(--red); letter-spacing: 2px; }
+
+  .receipt-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 3px dashed #b9b09a;
+  }
+
+  .reroll {
+    padding: 8px 18px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(13px, 1.5vw, 16px);
+    border: 3px solid var(--ink);
+    border-radius: 8px;
+    box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transform: rotate(-1.5deg);
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .reroll:hover {
+    background: #2b82ff;
+    transform: rotate(1deg) scale(1.06);
+    box-shadow: 5px 6px 0 var(--ink);
+  }
+  .reroll:active {
+    transform: translateY(4px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .reroll:focus-visible { outline: 4px solid var(--red); outline-offset: 3px; }
+
+  /* 条形码：纯 CSS 黑白竖线 */
+  .barcode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    user-select: none;
+  }
+  .barcode-bars {
+    width: 138px;
+    height: 34px;
+    opacity: .85;
+    background: repeating-linear-gradient(
+      90deg,
+      #141414 0 2px, transparent 2px 4px,
+      #141414 4px 5px, transparent 5px 9px,
+      #141414 9px 12px, transparent 12px 14px,
+      #141414 14px 15px, transparent 15px 20px
+    );
+  }
+  .barcode span {
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #444;
+  }
+
+  /* 印章 */
+  .stamp {
+    position: absolute;
+    top: -34px;
+    right: -26px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: clamp(84px, 10vw, 112px);
+    height: clamp(84px, 10vw, 112px);
+    border: 5px double var(--deep-red);
+    border-radius: 50%;
+    color: var(--deep-red);
+    font-weight: 900;
+    font-size: clamp(16px, 2vw, 22px);
+    line-height: 1.05;
+    letter-spacing: 2px;
+    text-align: center;
+    background: rgba(255, 251, 232, .55);
+    transform: rotate(-14deg);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .stamp::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 2px dashed var(--deep-red);
+    border-radius: 50%;
+  }
+
+  /* ============ 弹入动画 ============ */
+  .result.pop .receipt {
+    animation: popIn .7s cubic-bezier(.22, 1.62, .4, 1) both;
+  }
+  .result.pop .burst {
+    animation:
+      burstPop .7s cubic-bezier(.22, 1.5, .4, 1) both,
+      burstPulse 7s ease-in-out 1s infinite;
+  }
+  .result.pop .stamp {
+    animation: stampIn .5s .34s cubic-bezier(.2, 1.7, .4, 1) both;
+  }
+
+  @keyframes popIn {
+    0%   { transform: scale(.25) rotate(-18deg); opacity: 0; }
+    55%  { transform: scale(1.07) rotate(2deg); opacity: 1; }
+    75%  { transform: scale(.97) rotate(-2.2deg); }
+    100% { transform: scale(1) rotate(-1.5deg); opacity: 1; }
+  }
+  @keyframes burstPop {
+    0%   { transform: scale(.2) rotate(-40deg); opacity: 0; }
+    60%  { transform: scale(1.06) rotate(6deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes burstPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50%      { transform: scale(1.025) rotate(1.5deg); }
+  }
+  @keyframes stampIn {
+    0%   { transform: scale(1.9) rotate(-40deg); opacity: 0; }
+    60%  { transform: scale(.92) rotate(-10deg); opacity: 1; }
+    100% { transform: scale(1) rotate(-14deg); opacity: .9; }
+  }
+
+  /* 撒花粒子 */
+  .confetti {
+    position: fixed;
+    z-index: 9999;
+    font-size: 26px;
+    line-height: 1;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translate(-50%, -50%);
+  }
+
+  /* ============ 页脚 ============ */
+  .site-footer {
+    margin-top: 46px;
+    padding: 28px 16px 32px;
+    text-align: center;
+    background-color: var(--ink);
+    background-image: repeating-linear-gradient(45deg, rgba(255, 215, 0, .055) 0 14px, transparent 14px 28px);
+    border-top: 7px solid var(--red);
+  }
+  .footer-title {
+    margin: 0 0 12px;
+    color: #fff;
+    font-size: clamp(16px, 2.1vw, 22px);
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  .disclaimer {
+    max-width: 820px;
+    margin: 0 auto 18px;
+    padding: 10px 16px;
+    color: var(--yellow);
+    background: rgba(255, 0, 0, .16);
+    border: 2px dashed rgba(255, 215, 0, .5);
+    border-radius: 8px;
+    font-size: clamp(11px, 1.4vw, 14px);
+    font-weight: 700;
+    line-height: 1.7;
+    letter-spacing: .5px;
+  }
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    background: var(--yellow);
+    color: var(--deep-red);
+    font-weight: 900;
+    font-size: clamp(14px, 1.8vw, 18px);
+    letter-spacing: 1px;
+    border: 4px dashed var(--red);
+    border-radius: 10px;
+    cursor: pointer;
+    transform: rotate(-1deg);
+    box-shadow: 0 7px 0 var(--red), 0 12px 22px rgba(0, 0, 0, .45);
+    transition: transform .16s cubic-bezier(.2, 1.6, .4, 1), box-shadow .16s, background .16s;
+  }
+  .copy-btn:hover {
+    background: #ffe94d;
+    transform: rotate(1deg) scale(1.06);
+    box-shadow: 0 10px 0 var(--red), 0 16px 26px rgba(0, 0, 0, .5);
+  }
+  .copy-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 var(--red);
+  }
+  .copy-btn:focus-visible { outline: 4px solid #fff; outline-offset: 4px; }
+  .footer-small {
+    margin: 20px 0 0;
+    color: #9a9a9a;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  /* 复制成功提示 */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 30px;
+    z-index: 99999;
+    padding: 12px 22px;
+    background: var(--ink);
+    color: var(--yellow);
+    border: 3px solid var(--yellow);
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: clamp(12px, 1.5vw, 15px);
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, .4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 20px);
+    transition: opacity .25s, transform .25s, visibility .25s;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+
+  /* ============================================================
+     额外促销元素：放射光 / 悬价签 / 货架横梁 / 秒杀贴 / 底部播音条
+     ============================================================ */
+
+  /* 头部背后的放射状促销光 */
+  .hero::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 26px;
+    width: min(1240px, 150vw);
+    height: min(1240px, 150vw);
+    transform: translateX(-50%);
+    background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, .55) 0 4deg, transparent 4deg 9deg);
+    border-radius: 50%;
+    opacity: .42;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(circle, #000 0 30%, transparent 60%);
+    mask-image: radial-gradient(circle, #000 0 30%, transparent 60%);
+  }
+  .hero .hang-sign,
+  .hero .ropes { z-index: 1; }
+
+  /* 悬浮在吊牌旁的价签 */
+  .hero-deco {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-weight: 900;
+    line-height: 1.05;
+    pointer-events: none;
+  }
+  .hero-price {
+    top: 34px;
+    right: 1%;
+    width: 108px;
+    height: 108px;
+    padding: 10px;
+    color: var(--yellow);
+    font-size: 24px;
+    background: var(--red);
+    clip-path: polygon(50% 0%, 61% 18%, 80% 8%, 82% 29%, 100% 36%, 88% 53%, 100% 70%, 79% 74%, 77% 95%, 57% 84%, 43% 100%, 33% 82%, 13% 91%, 16% 70%, 0% 57%, 12% 41%, 0% 25%, 21% 21%, 21% 3%, 42% 14%);
+    transform: rotate(12deg);
+    filter: drop-shadow(4px 4px 0 var(--ink));
+    animation: decoWiggle 5s ease-in-out infinite;
+  }
+  .hero-price small {
+    display: block;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .hero-tag {
+    left: 1%;
+    bottom: 18px;
+    padding: 10px 16px;
+    color: var(--deep-red);
+    background: var(--yellow);
+    font-size: clamp(11px, 1.3vw, 14px);
+    border: 4px solid var(--ink);
+    border-radius: 6px;
+    box-shadow: 5px 5px 0 var(--ink);
+    transform: rotate(-8deg);
+    animation: decoWiggle 6s ease-in-out infinite reverse;
+  }
+  .hero-tag::before {
+    content: "";
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    width: 3px;
+    height: 24px;
+    background: var(--ink);
+    transform: translateX(-50%);
+  }
+  @keyframes decoWiggle {
+    0%, 100% { rotate: 0deg; }
+    50%      { rotate: 4deg; }
+  }
+
+  /* 面板右侧的竖排促销丝带 */
+  .panel-side-ribbon {
+    position: absolute;
+    top: 46%;
+    right: -28px;
+    z-index: 3;
+    padding: 12px 6px;
+    background: var(--yellow);
+    color: var(--deep-red);
+    font-weight: 900;
+    font-size: clamp(11px, 1.3vw, 14px);
+    letter-spacing: 5px;
+    writing-mode: vertical-rl;
+    border: 4px solid var(--ink);
+    border-radius: 4px;
+    box-shadow: 5px 5px 0 var(--ink);
+    transform: rotate(3deg);
+    pointer-events: none;
+  }
+
+  /* 货架横梁：黄黑警示条纹 */
+  .shelf-rail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 24px 0 0;
+    padding: 9px 14px;
+    background: repeating-linear-gradient(45deg, var(--yellow) 0 16px, var(--ink) 16px 32px);
+    border: 4px solid var(--ink);
+    border-radius: 6px;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, .8);
+    transform: rotate(-.5deg);
+    font-weight: 900;
+  }
+  .shelf-rail span,
+  .shelf-rail b {
+    padding: 3px 12px;
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 4px;
+    font-size: clamp(10px, 1.2vw, 13px);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .shelf-rail b {
+    background: var(--red);
+    color: #fff;
+    font-size: clamp(11px, 1.4vw, 15px);
+  }
+
+  /* 抢购按钮旁的秒杀圆贴 + 满减券 */
+  .buy-area { position: relative; }
+  .buy-sticker {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-weight: 900;
+    line-height: 1.05;
+    border: 4px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    pointer-events: none;
+  }
+  .buy-sticker-hot {
+    top: -26px;
+    right: 9%;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    font-size: 13px;
+    transform: rotate(10deg);
+    animation: hotPulse 1.4s ease-in-out infinite alternate;
+  }
+  .buy-sticker-hot b { font-size: 20px; color: var(--yellow); }
+  @keyframes hotPulse {
+    from { transform: rotate(10deg) scale(1); }
+    to   { transform: rotate(10deg) scale(1.12); }
+  }
+  .buy-sticker-coupon {
+    left: 4%;
+    bottom: -20px;
+    padding: 7px 14px;
+    background: #fff;
+    color: var(--deep-red);
+    font-size: clamp(11px, 1.3vw, 14px);
+    border-radius: 4px;
+    transform: rotate(-6deg);
+    box-shadow: 4px 4px 0 var(--ink), inset 0 0 0 2px var(--red);
+  }
+
+  /* 结果区左侧的“限时特供”贴纸 */
+  .result-badge {
+    position: absolute;
+    left: 0;
+    top: 34%;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 1.1;
+    text-align: center;
+    border: 5px dashed var(--yellow);
+    box-shadow: 5px 5px 0 var(--ink);
+    transform: rotate(-13deg);
+    pointer-events: none;
+  }
+  .result-badge b { display: block; font-size: 22px; color: var(--yellow); }
+
+  /* 页面底部的第二块电子屏 */
+  .marquee-bottom {
+    margin: 30px -10px 0;
+    background: var(--red);
+    transform: rotate(.6deg);
+  }
+  .marquee-bottom .marquee-track {
+    animation-direction: reverse;
+    animation-duration: 26s;
+  }
+  .marquee-bottom .marquee-group span { color: #fff; letter-spacing: 2px; }
+  .marquee-bottom .marquee-group span::after { color: var(--yellow); }
+
+  /* 面板底纹再加一层斜纹，强化海报感 */
+  .action-panel {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255, 215, 0, .14) 0 12px, transparent 12px 26px);
+  }
+
+  /* ============ 响应式 ============ */
+  @media (max-width: 980px) {
+    .scenes { grid-template-columns: repeat(2, 1fr); }
+    .scene,
+    .scene:nth-last-child(-n+2) { grid-column: auto; }
+    .panel-side-ribbon { display: none; }
+    .hero-tag { display: none; }
+    .shelf-rail { flex-wrap: wrap; justify-content: center; }
+    .result-badge { display: none; }
+  }
+
+  @media (max-width: 720px) {
+    .scenes { grid-template-columns: 1fr; gap: 16px; }
+    .hero { padding-top: 74px; }
+    .ropes span { height: 78px; }
+    .hang-sign { transform: rotate(-1deg); }
+    .receipt { width: 94%; box-shadow: 8px 10px 0 var(--ink); }
+    .result { margin-top: 56px; }
+    .burst { inset: -10px -12px; }
+    .stamp { top: -26px; right: -6px; }
+    .price-tag { width: 62px; height: 62px; }
+    .mega-btn { gap: 12px; padding: 16px 18px; }
+    .meta li { flex-direction: column; gap: 4px; }
+    .meta li span { min-width: 0; }
+    .deco-sticker { display: none; }
+    .receipt-foot { flex-direction: column-reverse; align-items: stretch; }
+    .reroll { width: 100%; }
+    .barcode { align-self: center; }
+    /* 移动端收起容易被裁切的悬浮促销件 */
+    .hero-deco,
+    .buy-sticker,
+    .result-badge { display: none; }
+    .marquee-bottom { margin-top: 22px; }
+  }
+
+  /* 尊重用户的“减少动态效果”系统设置 */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track,
+    .arrows,
+    .mega-btn,
+    .hero-price,
+    .hero-tag,
+    .buy-sticker-hot,
+    .result.pop .burst { animation: none !important; }
+    .result.pop .receipt { animation-duration: .01s; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= 头部：超市吊牌 ================= -->
+<header class="hero">
+  <div class="ropes" aria-hidden="true"><span></span><span></span></div>
+  <div class="hang-sign">
+    <div class="badge-top">全场 1 折 · 精神内耗清零</div>
+    <h1>📢 惊爆！<br><em>当代戏精</em>生存指南 📢</h1>
+    <p class="sub">不要内耗，做个戏精！你的专属超市促销级精神解药</p>
+    <div class="teeth" aria-hidden="true"></div>
+  </div>
+  <div class="hero-deco hero-price" aria-hidden="true">¥0.01<small>限时秒杀</small></div>
+  <div class="hero-deco hero-tag" aria-hidden="true">买一送一<br>不买也送</div>
+</header>
+
+<!-- ================= 超市电子屏：滚动广播条 ================= -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-group">
+      <span>📢 惊爆特价！今日全场情绪免费大放送！走过路过不要错过，专治各种内耗、嘴笨、不会来事儿！📢</span>
+    </div>
+    <div class="marquee-group">
+      <span>📢 惊爆特价！今日全场情绪免费大放送！走过路过不要错过，专治各种内耗、嘴笨、不会来事儿！📢</span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ================= 第一步：选购困境（货架商品） ================= -->
+  <section class="action-panel" aria-labelledby="step1">
+    <div class="panel-ribbon">促销专区</div>
+    <div class="panel-side-ribbon" aria-hidden="true">全 场 一 折</div>
+    <div class="deco-sticker deco-sale" aria-hidden="true">SALE<b>1折</b></div>
+    <div class="deco-sticker deco-egg" aria-hidden="true">🥚 特价鸡蛋 · 每人限购 2 份</div>
+
+    <h2 class="panel-title" id="step1"><span>STEP 1</span>选购你的困境</h2>
+
+    <div class="scenes" id="scenes" role="group" aria-label="选择你的困境场景">
+      <button type="button" class="scene" data-scene="overtime" aria-pressed="true">
+        <span class="scene-ribbon">热销 NO.1</span>
+        <span class="scene-emoji" aria-hidden="true">💼</span>
+        <span class="scene-name">老板周末<br>要求无偿加班</span>
+        <span class="scene-tip">高危 · 内耗指数 ★★★★★</span>
+        <span class="scene-price">
+          <span class="price-old">原价：精神崩溃 <s>¥998</s></span>
+          <span class="price-now">现价：完美化解 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="lateNight" aria-pressed="false">
+        <span class="scene-ribbon">深夜限定</span>
+        <span class="scene-emoji" aria-hidden="true">🌙</span>
+        <span class="scene-name">老板深夜<br>发微信</span>
+        <span class="scene-tip">突袭 · 内耗指数 ★★★★☆</span>
+        <span class="scene-price">
+          <span class="price-old">原价：睡眠质量 <s>¥888</s></span>
+          <span class="price-now">现价：已读不回 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="marriage" aria-pressed="false">
+        <span class="scene-ribbon">春节爆款</span>
+        <span class="scene-emoji" aria-hidden="true">🧨</span>
+        <span class="scene-name">被亲戚围攻<br>催婚催生</span>
+        <span class="scene-tip">爆发 · 内耗指数 ★★★★☆</span>
+        <span class="scene-price">
+          <span class="price-old">原价：亲情额度 <s>¥1200</s></span>
+          <span class="price-now">现价：耳根清净 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="blinddate" aria-pressed="false">
+        <span class="scene-ribbon">避雷专区</span>
+        <span class="scene-emoji" aria-hidden="true">🌹</span>
+        <span class="scene-name">相亲遇到<br>奇葩</span>
+        <span class="scene-tip">社恐 · 内耗指数 ★★★★☆</span>
+        <span class="scene-price">
+          <span class="price-old">原价：社交自信 <s>¥520</s></span>
+          <span class="price-now">现价：全身而退 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="borrow" aria-pressed="false">
+        <span class="scene-ribbon">催收必囤</span>
+        <span class="scene-emoji" aria-hidden="true">💸</span>
+        <span class="scene-name">朋友借钱<br>不还</span>
+        <span class="scene-tip">慢性 · 内耗指数 ★★★☆☆</span>
+        <span class="scene-price">
+          <span class="price-old">原价：友谊小船 <s>¥666</s></span>
+          <span class="price-now">现价：债款到账 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="client" aria-pressed="false">
+        <span class="scene-ribbon">甲方专供</span>
+        <span class="scene-emoji" aria-hidden="true">🎨</span>
+        <span class="scene-name">甲方要求<br>五彩斑斓的黑</span>
+        <span class="scene-tip">玄学 · 内耗指数 ★★★★★</span>
+        <span class="scene-price">
+          <span class="price-old">原价：设计师尊严 <s>¥2333</s></span>
+          <span class="price-now">现价：尾款到账 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="group" aria-pressed="false">
+        <span class="scene-ribbon">社死急救</span>
+        <span class="scene-emoji" aria-hidden="true">📱</span>
+        <span class="scene-name">群里被@<br>强行接话</span>
+        <span class="scene-tip">公开处刑 · 内耗指数 ★★★★☆</span>
+        <span class="scene-price">
+          <span class="price-old">原价：当场社死 <s>¥999</s></span>
+          <span class="price-now">现价：隐身成功 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+
+      <button type="button" class="scene" data-scene="blame" aria-pressed="false">
+        <span class="scene-ribbon">职场护体</span>
+        <span class="scene-emoji" aria-hidden="true">🍳</span>
+        <span class="scene-name">同事当众<br>甩锅给你</span>
+        <span class="scene-tip">背锅 · 内耗指数 ★★★★★</span>
+        <span class="scene-price">
+          <span class="price-old">原价：职场清白 <s>¥777</s></span>
+          <span class="price-now">现价：锅已退回 <b>¥0.01</b></span>
+        </span>
+        <span class="scene-tick">✓ 已选购</span>
+      </button>
+    </div>
+
+    <div class="shelf-rail" aria-hidden="true">
+      <span>🧃 戏精专柜</span>
+      <b>全场情绪 ¥0.01</b>
+      <span>今日不限购</span>
+    </div>
+
+    <p class="hint">👆 选中一个困境，加入购物车（库存紧张，概不退换）</p>
+  </section>
+
+  <!-- ================= 第二步：戏精指数 + 抢购 ================= -->
+  <div class="arrow-row" aria-hidden="true">
+    <span class="arrow-label">STEP 2 · 别犹豫，往下冲</span>
+    <span class="arrows">⬇⬇⬇</span>
+  </div>
+
+  <div class="meter-wrap" id="meterWrap">
+    <div class="meter-head">
+      <span class="meter-title">📊 当前戏精指数</span>
+      <span class="meter-value" id="meterValue">66%</span>
+    </div>
+    <div class="meter-track" id="meterTrack" role="progressbar" aria-label="当前戏精指数" aria-valuemin="0" aria-valuemax="100" aria-valuenow="66">
+      <div class="meter-fill" id="meterFill"></div>
+      <div class="meter-ticks" aria-hidden="true"></div>
+    </div>
+    <p class="meter-note">※ 切换困境会随机充值戏精值，概不找零 ※</p>
+  </div>
+
+  <div class="buy-area">
+    <span class="buy-sticker buy-sticker-hot" aria-hidden="true">限时<br><b>秒杀</b></span>
+    <button type="button" id="generateBtn" class="mega-btn">
+      <span class="price-tag" aria-hidden="true">特价<br><b>¥0.00</b></span>
+      <span class="btn-text">🛒 立即抢购解药<br><small>（生成指南）</small></span>
+    </button>
+    <span class="buy-sticker buy-sticker-coupon" aria-hidden="true">🎫 满 0 减 0 · 全场通用</span>
+  </div>
+
+  <!-- ================= 第三步：结果展示 ================= -->
+  <section id="result" class="result" hidden aria-live="polite">
+    <div class="burst" id="burst" aria-hidden="true"></div>
+    <div class="result-badge" aria-hidden="true">限时<b>特供</b></div>
+
+    <article class="receipt">
+      <div class="receipt-head">
+        <span class="receipt-no">NO.<b id="resNo">001</b> · 电子小票</span>
+        <span class="receipt-hot">HOT 爆款</span>
+      </div>
+
+      <p class="res-kicker" id="resKicker">职场急救 · 今日特供</p>
+      <h3 class="res-product" id="resProduct">灵魂下班喷雾</h3>
+      <p class="res-scene" id="resScene">适用场景：老板周末要求无偿加班</p>
+
+      <div class="res-price-strip">
+        <span class="old">原价：<s id="resOldPrice">精神崩溃 ¥998</s></span>
+        <span class="arrow" aria-hidden="true">➜</span>
+        <span class="new">现价：<b id="resNewPrice">完美化解 ¥0.01</b></span>
+      </div>
+
+      <p class="res-section-label">🍿 戏精应对方案</p>
+      <div class="speech">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <p id="resLine">老板，我的灵魂已经下班了……</p>
+      </div>
+
+      <ul class="meta">
+        <li><span>戏精指数</span><b class="stars" id="resStars">★★★★★</b></li>
+        <li><span>附加操作</span><b id="resAction">配合动作：对着工位喷两下</b></li>
+        <li><span>副作用</span><b id="resSide">同事以为你疯了</b></li>
+        <li><span>保质期</span><b id="resShelf">直到下次发工资</b></li>
+      </ul>
+
+      <div class="receipt-foot">
+        <button type="button" id="rerollBtn" class="reroll">🎲 换一句台词</button>
+        <div class="barcode" aria-hidden="true">
+          <div class="barcode-bars"></div>
+          <span>69730218866</span>
+        </div>
+      </div>
+
+      <div class="stamp" aria-hidden="true">戏精<br>认证</div>
+    </article>
+  </section>
+
+</main>
+
+<!-- ================= 底部第二块电子屏 ================= -->
+<div class="marquee marquee-bottom" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-group">
+      <span>🏪 本店承诺：只贩卖快乐，不贩卖焦虑 ★ 打工人专供 ★ 买一送一 ★ 概不退换 ★ 明日继续疯抢 🏪</span>
+    </div>
+    <div class="marquee-group">
+      <span>🏪 本店承诺：只贩卖快乐，不贩卖焦虑 ★ 打工人专供 ★ 买一送一 ★ 概不退换 ★ 明日继续疯抢 🏪</span>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p class="footer-title">🎪 当代戏精生存指南 · 本店不打烊</p>
+  <p class="disclaimer">* 温馨提示：本指南仅供娱乐，若因过度戏精导致被老板开除或被亲戚拉黑，本超市概不负责。 *</p>
+  <button type="button" id="copyBtn" class="copy-btn">📋 一键复制我的戏精指南</button>
+  <p class="footer-small">※ 促销最终解释权归你自己的快乐所有 ※</p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     1. 内置数据字典：每个困境对应产品信息 + 3~4 条戏精话术
+     ============================================================ */
+  const SCENES = {
+    overtime: {
+      name: '老板周末要求无偿加班',
+      product: '灵魂下班喷雾',
+      kicker: '职场急救 · 今日特供',
+      oldPrice: '精神崩溃 ¥998',
+      newPrice: '完美化解 ¥0.01',
+      action: '配合动作：对着工位喷两下，然后光速合上电脑，物理后退三步',
+      side: '同事以为你疯了，老板以为你在演，但你是真的快乐',
+      shelf: '直到下次发工资',
+      stars: '★★★★★',
+      lines: [
+        '老板，我的灵魂已经下班了，现在坐在电脑前的是我的肉体，它只能干饭不能干活（大哭）。',
+        '收到！我这就把电脑壁纸换成灵堂，给这份无偿加班上三炷香，保佑它早日投胎成加班费。',
+        '老板，我的工时余额不足，请先帮我充值一个「双休」套餐，否则系统将自动关机。',
+        '我可以加班，但请给我的键盘也开一份工资，它也是要养家糊口的。',
+        '老板，我刚算了一下，我的时薪除以加班时长，已经低到需要申请低保了。',
+        '周末我在修炼一门失传已久的功法，叫「不回工作消息」，现在正是关键期。',
+        '我可以来，但需要带薪、带饭、带情绪价值，三样缺一不可。'
+      ]
+    },
+
+    lateNight: {
+      name: '老板深夜发微信',
+      product: '已读不回眼药水',
+      kicker: '深夜保命 · 静音特供',
+      oldPrice: '黑眼圈 ¥888',
+      newPrice: '安稳入睡 ¥0.01',
+      action: '配合动作：把手机扣在枕头下，默念三遍「明早再说」',
+      side: '老板可能觉得你睡得很安详，但你确实睡得很香',
+      shelf: '到第二天早上 9 点',
+      stars: '★★★★☆',
+      lines: [
+        '老板，我已经进入飞行模式了，现在的我是 AI 自动回复，它不会干活，只会说「收到」。',
+        '抱歉老板，我刚在梦里加班，手机没信号，等我醒了再给您托梦汇报。',
+        '这条消息我收到了，但我的灵魂已经关机维护，预计明早九点重新上线。',
+        '老板您这么晚还不睡，是不是也在等我的已读不回？',
+        '老板，这个点给我发消息，是在测试我的求生欲还是我的睡眠质量？',
+        '我刚准备睡，您这一条消息把我的困意直接吓跑了，它说明天再来。',
+        '深夜的微信就像夜宵，看着很香，吃完就后悔。老板，咱们明早再点单好吗？'
+      ]
+    },
+
+    marriage: {
+      name: '被亲戚围攻催婚催生',
+      product: '亲戚闭嘴含片',
+      kicker: '春节保命 · 限量供应',
+      oldPrice: '亲情裂痕 ¥1200',
+      newPrice: '耳根清净 ¥0.01',
+      action: '配合动作：保持微笑，反问「您家孩子期末考多少分」，然后物理后退两步',
+      side: '可能被亲戚拉黑，但整个春节都能清净',
+      shelf: '整个春节假期',
+      stars: '★★★★☆',
+      lines: [
+        '阿姨，我对象在路上呢，堵在「缘分收费站」了。我怕他来了您又催生，干脆让他先绕个路。',
+        '我结婚了呀，和我自己。婚礼办得很低调，只请了我的外卖小哥。',
+        '对象正在加载中，进度 99%，卡在最后 1%，跟您家 WiFi 一个毛病。',
+        '阿姨您先别急，我给您表演一个「原地结婚又原地离婚」，包您看过瘾。',
+        '阿姨，您这么关心我的终身大事，要不先把您家孩子的成绩单借我看看？',
+        '我对象还没找到，但我已经想好孩子的名字了，叫「再等等」。',
+        '催婚可以，红包得跟上。您这一句催，起码得包个四位数吧？'
+      ]
+    },
+
+    blinddate: {
+      name: '相亲遇到奇葩',
+      product: '奇葩回收站入场券',
+      kicker: '相亲避雷 · 限时体验',
+      oldPrice: '社交自信 ¥520',
+      newPrice: '全身而退 ¥0.01',
+      action: '配合动作：微笑点头，暗中把对方备注改成「避雷」，饭后主动 AA',
+      side: '可能单身更久，但能少受一次罪',
+      shelf: '一顿饭的时间',
+      stars: '★★★★☆',
+      lines: [
+        '你条件这么好，怎么还单身？——因为我眼光高，高到看不上你这种开场白。',
+        '我妈说相亲要看缘分，我看咱俩的缘分，大概就停在这杯白开水上了。',
+        '不好意思，我这个人比较传统，只接受和人类谈恋爱。',
+        '您这问题问得挺好的，下次别问了。来，先干了这杯，AA。',
+        '您月薪多少？——够花。您有几套房？——够住。您还有什么想问的？——够了吧。',
+        '我觉得咱俩挺合适的，您适合找一个更能忍的人。',
+        '不好意思，我妈说第一次见面不能聊太多，怕我把人家聊跑了——好像已经跑了。'
+      ]
+    },
+
+    borrow: {
+      name: '朋友借钱不还',
+      product: '欠债还钱口服液',
+      kicker: '友情续费 · 到期提醒',
+      oldPrice: '友谊小船 ¥666',
+      newPrice: '债款到账 ¥0.01',
+      action: '配合动作：把转账记录截图发过去，再补一句「最近我也穷」',
+      side: '友情可能清零，余额可能回血',
+      shelf: '对方良心发现之前',
+      stars: '★★★☆☆',
+      lines: [
+        '钱我借你了，但我的记忆它不借，它现在天天在我脑子里循环播放转账记录。',
+        '咱俩感情这么深，谈钱多伤感情——所以你还是把钱还了吧，别伤感情。',
+        '我最近在练习失忆，但一看到你的头像，我的余额就自动想起来了。',
+        '你借钱的时候说「下周还」，我数了数，已经过去八十个「下周」了，够拍一部连续剧。',
+        '我不是催你，我是怕你忘了。你要是忘了，我就得天天在你面前晃，多伤感情。',
+        '你看这转账记录，它都泛黄了，再不还，它就要变成文物了。',
+        '我最近在研究一个课题：借出去的钱，到底能不能自己走回来。'
+      ]
+    },
+
+    client: {
+      name: '甲方要求五彩斑斓的黑',
+      product: '五彩斑斓黑调和油',
+      kicker: '设计玄学 · 尾款护航',
+      oldPrice: '设计师尊严 ¥2333',
+      newPrice: '尾款到账 ¥0.01',
+      action: '配合动作：先点头，再打开 PS，把黑色调出 36 种情绪',
+      side: '会短暂失去审美，但能保住尾款',
+      shelf: '项目上线即过期',
+      stars: '★★★★★',
+      lines: [
+        '您要的五彩斑斓的黑，我已经做出来了——白天看是黑，晚上看是更黑。',
+        '这个需求非常超前，建议等人类显示器进化到能显示「五彩斑斓的黑」再上线，我先帮您预约 3000 年。',
+        '黑是底色，斑斓是梦想。我给您叠了 36 层黑，每一层都有自己的情绪。',
+        '好的甲方爸爸，我这就把黑色调成「尊贵的黑」，再加一点「低调的绚烂」，您看这味儿对吗？',
+        '您说的五彩斑斓的黑，我理解，就是那种「看起来很贵但其实是黑」的黑，对吧？',
+        '这个黑我调了三天，它现在不仅斑斓，还会在深夜偷偷发光，您要不要再加点预算？',
+        '甲方爸爸，您要的是一种感觉，我给您做的是一份工伤，咱们各退一步，尾款先结一下？'
+      ]
+    },
+
+    group: {
+      name: '群里被@强行接话',
+      product: '群聊隐身斗篷',
+      kicker: '社死急救 · 群聊专供',
+      oldPrice: '当场社死 ¥999',
+      newPrice: '隐身成功 ¥0.01',
+      action: '配合动作：先发一个「哈哈哈」，再光速撤回，制造神秘感',
+      side: '群友以为你手滑，其实你在下一盘大棋',
+      shelf: '直到下一次被 @',
+      stars: '★★★★☆',
+      lines: [
+        '@我干嘛？我正在群里潜水，潜得好好的，突然被捞上来，很没有安全感。',
+        '刚看到，刚才在忙——忙着假装没看到。',
+        '这个问题问得好，我建议 @ 一位更懂的人（并迅速退群三秒）。',
+        '我人虽然在群里，但我的灵魂已经设置成免打扰了。',
+        '我不是不回，我是在等一个合适的时机——比如这个话题结束的时候。',
+        '刚在开会，现在才看到。会议内容：如何优雅地不回群消息。',
+        '这个群没有我可怎么办啊，连个已读不回的人都没有。'
+      ]
+    },
+
+    blame: {
+      name: '同事当众甩锅给你',
+      product: '甩锅反弹盾',
+      kicker: '职场护体 · 紧急止损',
+      oldPrice: '职场清白 ¥777',
+      newPrice: '锅已退回 ¥0.01',
+      action: '配合动作：慢慢转头看向对方，露出「你确定？」的微笑',
+      side: '锅可能反弹到同事脸上，场面一度非常解压',
+      shelf: '下次甩锅之前',
+      stars: '★★★★★',
+      lines: [
+        '这锅我不接，我最近在减脂，油腻的东西一概不碰。',
+        '哦？这个项目不是您全程负责的吗？我只是那个被 @ 的工具人。',
+        '锅先放这儿，我帮您叫个闪送，直接送回您工位。',
+        '我这个人有个毛病，一背锅就想辞职，您看这毛病还能改吗？',
+        '这个锅的形状不太适合我，建议您找个更圆润的同事。',
+        '我建议咱们开个复盘会，主题就叫《这锅到底该谁背》，我负责记录。',
+        '我这人有个原则：可以加班，可以背锅，但不能又加班又背锅。'
+      ]
+    }
+  };
+
+  /* ============================================================
+     2. 元素引用 & 状态
+     ============================================================ */
+  const scenesEl    = document.getElementById('scenes');
+  const generateBtn = document.getElementById('generateBtn');
+  const resultEl    = document.getElementById('result');
+  const burstEl     = document.getElementById('burst');
+
+  const resNo       = document.getElementById('resNo');
+  const resKicker   = document.getElementById('resKicker');
+  const resProduct  = document.getElementById('resProduct');
+  const resScene    = document.getElementById('resScene');
+  const resLine     = document.getElementById('resLine');
+  const resStars    = document.getElementById('resStars');
+  const resOldPrice = document.getElementById('resOldPrice');
+  const resNewPrice = document.getElementById('resNewPrice');
+  const resAction   = document.getElementById('resAction');
+  const resSide     = document.getElementById('resSide');
+  const resShelf    = document.getElementById('resShelf');
+  const rerollBtn   = document.getElementById('rerollBtn');
+
+  const meterWrap  = document.getElementById('meterWrap');
+  const meterFill  = document.getElementById('meterFill');
+  const meterValue = document.getElementById('meterValue');
+  const meterTrack = document.getElementById('meterTrack');
+
+  const copyBtn = document.getElementById('copyBtn');
+  const toastEl = document.getElementById('toast');
+
+  let currentScene = 'overtime';
+  let meterTimer = null;
+  let toastTimer = null;
+  const lastLineByScene = {}; // 记录每个场景上次的台词，避免连续重复
+
+  /* ============================================================
+     2.1 戏精指数进度条：切换场景时随机跳动，生成时拉满
+     ============================================================ */
+  function setMeter(value) {
+    const v = Math.max(0, Math.min(100, Math.round(value)));
+    meterFill.style.width = v + '%';
+    meterValue.textContent = v >= 100 ? '100% 爆表!' : v + '%';
+    meterTrack.setAttribute('aria-valuenow', String(v));
+    meterWrap.classList.toggle('full', v >= 100);
+  }
+
+  // 快速随机跳动 5 次，最后停在一个随机高值
+  function spinMeter() {
+    window.clearInterval(meterTimer);
+    let step = 0;
+    meterTimer = window.setInterval(function () {
+      setMeter(35 + Math.random() * 60);
+      step++;
+      if (step >= 5) {
+        window.clearInterval(meterTimer);
+        setMeter(55 + Math.random() * 44);
+      }
+    }, 110);
+  }
+
+  /* ============================================================
+     3. 生成爆炸贴的星形多边形（clip-path）
+        参数：spikes 尖角数量，inner 内圈半径比例
+     ============================================================ */
+  function applyBurstShape(el, spikes, inner) {
+    const points = [];
+    const total = spikes * 2;
+    for (let i = 0; i < total; i++) {
+      // 偶数点是外尖角，奇数点是内凹点
+      const angle = (Math.PI * 2 * i) / total;
+      const radius = (i % 2 === 0 ? 50 : 50 * inner);
+      const x = 50 + Math.cos(angle) * radius;
+      const y = 50 + Math.sin(angle) * radius;
+      points.push(x.toFixed(2) + '% ' + y.toFixed(2) + '%');
+    }
+    el.style.clipPath = 'polygon(' + points.join(', ') + ')';
+  }
+
+  /* ============================================================
+     4. 场景选择交互
+     ============================================================ */
+  function selectScene(key) {
+    currentScene = key;
+    // 同步所有卡片的选中态与无障碍属性
+    scenesEl.querySelectorAll('.scene').forEach(function (btn) {
+      const isActive = btn.dataset.scene === key;
+      btn.setAttribute('aria-pressed', String(isActive));
+    });
+    // 换困境 = 重新充值戏精值
+    spinMeter();
+  }
+
+  scenesEl.addEventListener('click', function (event) {
+    const btn = event.target.closest('.scene');
+    if (!btn) return;
+    selectScene(btn.dataset.scene);
+  });
+
+  /* ============================================================
+     5. 随机抽取台词（同一场景避免连续重复）
+     ============================================================ */
+  function pickLine(key) {
+    const lines = SCENES[key].lines;
+    if (lines.length <= 1) return lines[0];
+
+    let line;
+    do {
+      line = lines[Math.floor(Math.random() * lines.length)];
+    } while (line === lastLineByScene[key]);
+
+    lastLineByScene[key] = line;
+    return line;
+  }
+
+  /* ============================================================
+     6. 把数据渲染到结果区
+     ============================================================ */
+  function renderResult(data, line) {
+    resNo.textContent       = String(Math.floor(Math.random() * 900) + 100);
+    resKicker.textContent   = data.kicker;
+    resProduct.textContent  = data.product;
+    resScene.textContent    = '适用场景：' + data.name;
+    resOldPrice.textContent = data.oldPrice;
+    resNewPrice.textContent = data.newPrice;
+    resLine.textContent     = line;
+    resStars.textContent    = data.stars;
+    resAction.textContent   = data.action;
+    resSide.textContent     = data.side;
+    resShelf.textContent    = data.shelf;
+  }
+
+  /* ============================================================
+     7. 爆炸贴撒花：从按钮位置飞出若干 emoji
+     ============================================================ */
+  function spawnConfetti(origin) {
+    const emojis = ['🎉', '💥', '✨', '🛒', '💰', '📢', '🥚', '🔥', '🧾', '⭐'];
+    const rect = origin.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 18; i++) {
+      const span = document.createElement('span');
+      span.className = 'confetti';
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.left = cx + 'px';
+      span.style.top  = cy + 'px';
+      document.body.appendChild(span);
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 90 + Math.random() * 260;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 80;
+      const rot = (Math.random() * 720 - 360).toFixed(0) + 'deg';
+
+      const anim = span.animate([
+        { transform: 'translate(-50%, -50%) scale(.5) rotate(0deg)', opacity: 1 },
+        { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1.2) rotate(' + rot + ')', opacity: 1, offset: .65 },
+        { transform: 'translate(calc(-50% + ' + (dx * 1.15) + 'px), calc(-50% + ' + (dy + 160) + 'px)) scale(.4) rotate(' + rot + ')', opacity: 0 }
+      ], {
+        duration: 1000 + Math.random() * 600,
+        easing: 'cubic-bezier(.15, .8, .3, 1)',
+        fill: 'forwards'
+      });
+
+      anim.onfinish = function () { span.remove(); };
+    }
+  }
+
+  /* ============================================================
+     8. 点击抢购：显示结果 + POP 动效
+     ============================================================ */
+  function generateGuide() {
+    const data = SCENES[currentScene];
+    if (!data) return;
+
+    renderResult(data, pickLine(currentScene));
+
+    // 解药一出，戏精指数直接拉满
+    window.clearInterval(meterTimer);
+    setMeter(100);
+
+    // 重新触发动画：先显示、移除类、强制重排、再加类
+    resultEl.hidden = false;
+    resultEl.classList.remove('pop');
+    void resultEl.offsetWidth;
+    resultEl.classList.add('pop');
+
+    spawnConfetti(generateBtn);
+
+    // 等动画起势后滚动到解药位置
+    window.setTimeout(function () {
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
+  }
+
+  /* ============================================================
+     9. 换一句台词
+     ============================================================ */
+  function rerollLine() {
+    if (resultEl.hidden) return;
+
+    resLine.textContent = pickLine(currentScene);
+
+    resLine.classList.remove('line-pop');
+    void resLine.offsetWidth;
+    resLine.classList.add('line-pop');
+
+    // 小票编号也跟着换，像重新打印了一张
+    resNo.textContent = String(Math.floor(Math.random() * 900) + 100);
+  }
+
+  /* ============================================================
+     10. 一键复制戏精指南
+     ============================================================ */
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 2200);
+  }
+
+  // 拼出发朋友圈用的纯文本
+  function buildShareText() {
+    const data = SCENES[currentScene];
+    return [
+      '📢 当代戏精生存指南 · 今日特供',
+      '【场景】' + data.name,
+      '【解药】' + data.product + '（现价 ¥0.01）',
+      '【应对方案】' + resLine.textContent,
+      '【附加操作】' + data.action,
+      '【副作用】' + data.side,
+      '【保质期】' + data.shelf,
+      '【戏精指数】' + data.stars,
+      '',
+      '—— 来自「当代戏精生存指南」超市促销专柜'
+    ].join('\n');
+  }
+
+  // file:// 打开时 Clipboard API 可能不可用，降级用 textarea + execCommand
+  function legacyCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  }
+
+  function copyGuide() {
+    if (resultEl.hidden) {
+      showToast('🛒 还没抢购呢，先点大按钮生成一份！');
+      return;
+    }
+
+    const text = buildShareText();
+    const done = function () {
+      showToast('✅ 已复制，快去朋友圈发疯吧！');
+      const original = '📋 一键复制我的戏精指南';
+      copyBtn.textContent = '✅ 已复制！';
+      window.setTimeout(function () { copyBtn.textContent = original; }, 1800);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function () {
+        legacyCopy(text);
+        done();
+      });
+    } else {
+      legacyCopy(text);
+      done();
+    }
+  }
+
+  /* ============================================================
+     11. 绑定事件 & 初始化
+     ============================================================ */
+  generateBtn.addEventListener('click', generateGuide);
+  rerollBtn.addEventListener('click', rerollLine);
+  copyBtn.addEventListener('click', copyGuide);
+
+  applyBurstShape(burstEl, 28, 0.78); // 生成爆炸贴的尖角形状
+  selectScene('overtime');            // 默认选中第一个场景，并让指数条跳一轮
+})();
+</script>
+</body>
+</html>
